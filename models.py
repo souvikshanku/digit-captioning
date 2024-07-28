@@ -29,53 +29,50 @@ class RNN(nn.Module):
         self.seq_len = seq_len
         self.hidden_size = 20
         self.vocab_size = 29
-        self.batch_size = 64
         self.num_layers = 1
 
-        self.W_hx = torch.randn(
-            (self.num_layers, self.hidden_size, self.vocab_size),
-            requires_grad=True
-        )
-        self.b_hx = torch.zeros(
-            (self.num_layers, self.hidden_size),
-            requires_grad=True
-        )
-        self.W_hh = torch.randn(
-            (self.num_layers, self.hidden_size, self.hidden_size),
-            requires_grad=True
-        )
-        self.b_hh = torch.zeros(
-            (self.num_layers, self.hidden_size),
-            requires_grad=True
-        )
+        self.W_ih = nn.Parameter(torch.randn(
+            (self.num_layers, self.hidden_size, self.vocab_size)
+        ))
+        self.b_ih = nn.Parameter(torch.zeros(
+            (self.num_layers, self.hidden_size)
+        ))
+        self.W_hh = nn.Parameter(torch.randn(
+            (self.num_layers, self.hidden_size, self.hidden_size)
+        ))
+        self.b_hh = nn.Parameter(torch.zeros(
+            (self.num_layers, self.hidden_size)
+        ))
 
-        self.W_oh = torch.randn(
-            (self.vocab_size, self.hidden_size), requires_grad=True
-        )
-        self.b_oh = torch.zeros((self.vocab_size), requires_grad=True)
+        self.W_ho = nn.Parameter(torch.randn(
+            (self.vocab_size, self.hidden_size)
+        ))
+        self.b_ho = nn.Parameter(torch.zeros(
+            (self.vocab_size)
+        ))
 
     def forward(self, x, img_emb):
+        batch_size = x.shape[1]
         output = []
-        h_0 = torch.zeros(self.num_layers, self.batch_size, self.hidden_size)
-        h_t_minus_1 = h_0
-        h_t = h_0
+        h_0 = torch.zeros(self.num_layers, batch_size, self.hidden_size)
+        h_t_minus_1 = h_0.clone()
+        h_t = h_0.clone()
 
         for t in range(self.seq_len):
             for layer in range(self.num_layers):
                 h_t[layer] = torch.tanh(
-                    x[t] @ self.W_hx[layer].T
-                    + self.b_hx[layer]
+                    x[t] @ self.W_ih[layer].T
+                    + self.b_ih[layer]
                     + h_t_minus_1[layer] @ self.W_hh[layer].T
                     + self.b_hh[layer]
-                    + (t == 1) * img_emb
+                    + (t == 0) * img_emb
                 )
 
-            output.append(h_t[-1])
-            h_t_minus_1 = h_t
+            output.append(h_t[-1].clone())
+            h_t_minus_1 = h_t.clone()
 
         output = torch.stack(output)
-
-        output = output.view((self.seq_len, self.batch_size, self.hidden_size))
-        output = output @ self.W_oh.T + self.b_oh
+        output = output.view((self.seq_len, batch_size, self.hidden_size))
+        output = output @ self.W_ho.T + self.b_ho
 
         return F.log_softmax(output, dim=-1)
