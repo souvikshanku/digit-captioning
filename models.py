@@ -6,17 +6,17 @@ import torch.nn.functional as F
 class CNN(nn.Module):
     def __init__(self):
         super().__init__()
-        self.conv1 = nn.Conv2d(1, 6, 3, padding=1)  # same h, w
+        self.conv1 = nn.Conv2d(1, 16, 3, padding=1)
         self.pool = nn.MaxPool2d(2, 2)
-        self.conv2 = nn.Conv2d(6, 5, 5)
-        self.fc1 = nn.Linear(5 * 14 * 14, 120)
-        self.fc2 = nn.Linear(120, 20)
+        self.conv2 = nn.Conv2d(16, 8, 5)
+        self.fc1 = nn.Linear(8 * 14 * 14, 1024)
+        self.fc2 = nn.Linear(1024, 50)
 
     def forward(self, x):
-        x = F.relu(self.conv1(x))
-        x = self.pool(x)
-        x = F.relu(self.conv2(x))
-        x = self.pool(x)
+        x = F.relu(self.conv1(x))       # 64 x 64 x 16
+        x = self.pool(x)                # 32 x 32 x 16
+        x = F.relu(self.conv2(x))       # 28 x 28 x 8
+        x = self.pool(x)                # 14 x 14 x 8
         x = torch.flatten(x, 1)  # flatten all dimensions except batch
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
@@ -27,7 +27,7 @@ class RNN(nn.Module):
     def __init__(self, seq_len):
         super().__init__()
         self.seq_len = seq_len
-        self.hidden_size = 20
+        self.hidden_size = 50
         self.vocab_size = 29
         self.num_layers = 1
 

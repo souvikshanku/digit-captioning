@@ -14,8 +14,8 @@ class DoubleMnist(Dataset):
 
         vocab = "abcdefghijklmnopqrstuvwxyz "
         self.vocab = dict(zip(list(vocab), range(len(vocab))))
-        self.vocab["<start>"] = 26
-        self.vocab["<end>"] = 27
+        self.vocab["<start>"] = 27
+        self.vocab["<end>"] = 28
 
     def __len__(self):
         return len(self.img_labels)
@@ -23,6 +23,8 @@ class DoubleMnist(Dataset):
     def __getitem__(self, idx):
         img_path = os.path.join(self.img_dir, self.img_labels.iloc[idx, 0])
         image = read_image(img_path)
+        image = torch.cat([image, image, image], dim=0)  # for VGG
+
         label = self.img_labels.iloc[idx, 2]
         label = self._get_ohe_label(label)
         return image, label
@@ -56,6 +58,6 @@ if __name__ == "__main__":
     print(f"Labels batch shape: {len(train_labels)}")
     img = train_features[0].squeeze()
     label = train_labels[0]
-    plt.imshow(img, cmap="gray")
+    plt.imshow(img[1], cmap="gray")
     plt.show()
     print(f"Label: {label}, shape:{label.shape}")
