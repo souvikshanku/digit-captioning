@@ -2,25 +2,25 @@ from dataset import DoubleMnist
 import torch
 import torch.optim as optim
 from torch.utils.data import DataLoader
-from torchvision import models
-from models import RNN  # , CNN
+# from torchvision import models
+from models import RNN, CNN
 
 
 def train(train_dataloader, num_epochs=3):
     # transfer learning
-    cnn = models.vgg16(weights="DEFAULT")
-    for param in cnn.parameters():
-        param.requires_grad = False
-    cnn.classifier[6] = torch.nn.Linear(4096, 50)
+    # cnn = models.vgg16(weights="DEFAULT")
+    # for param in cnn.parameters():
+    #     param.requires_grad = False
+    # cnn.classifier[6] = torch.nn.Linear(4096, 50)
 
-    # cnn = CNN()
+    cnn = CNN()
     rnn = RNN(seq_len=15 - 1)
     ckpt = 0
 
-    ckpt = 2
-    checkpoint = torch.load(f"checkpoints/itr_{ckpt}.pt")
-    cnn.load_state_dict(checkpoint['cnn_state_dict'])
-    rnn.load_state_dict(checkpoint['rnn_state_dict'])
+    # ckpt = 2
+    # checkpoint = torch.load(f"checkpoints/itr_{ckpt}.pt")
+    # cnn.load_state_dict(checkpoint['cnn_state_dict'])
+    # rnn.load_state_dict(checkpoint['rnn_state_dict'])
 
     optimizer = optim.Adam([*cnn.parameters(), *rnn.parameters()], lr=0.0005)
 
@@ -45,6 +45,8 @@ def train(train_dataloader, num_epochs=3):
 
             optimizer.zero_grad()
             loss.backward()
+            torch.nn.utils.clip_grad_norm_(rnn.parameters(), max_norm=5)
+            torch.nn.utils.clip_grad_norm_(cnn.parameters(), max_norm=5)
             optimizer.step()
 
         torch.save({

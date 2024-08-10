@@ -23,7 +23,7 @@ class DoubleMnist(Dataset):
     def __getitem__(self, idx):
         img_path = os.path.join(self.img_dir, self.img_labels.iloc[idx, 0])
         image = read_image(img_path)
-        image = torch.cat([image, image, image], dim=0)  # for VGG
+        # image = torch.cat([image, image, image], dim=0)  # for VGG Net
 
         label = self.img_labels.iloc[idx, 2]
         label = self._get_ohe_label(label)
