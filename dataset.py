@@ -8,9 +8,10 @@ from torchvision.io import read_image
 
 
 class DoubleMnist(Dataset):
-    def __init__(self, annotations_file, img_dir):
+    def __init__(self, annotations_file, img_dir, device):
         self.img_labels = pd.read_csv(annotations_file, header=None)
         self.img_dir = img_dir
+        self.device = device
 
         vocab = "abcdefghijklmnopqrstuvwxyz "
         self.vocab = dict(zip(list(vocab), range(len(vocab))))
@@ -23,10 +24,13 @@ class DoubleMnist(Dataset):
     def __getitem__(self, idx):
         img_path = os.path.join(self.img_dir, self.img_labels.iloc[idx, 0])
         image = read_image(img_path)
-        # image = torch.cat([image, image, image], dim=0)  # for VGG Net
 
         label = self.img_labels.iloc[idx, 2]
         label = self._get_ohe_label(label)
+
+        image = image.to(self.device)
+        label = label.to(self.device)
+
         return image, label
 
     def _get_ohe_label(self, label):
@@ -47,17 +51,17 @@ if __name__ == "__main__":
 
     annotations_file = "data/labels.csv"
     img_dir = "data/double_mnist"
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-    data = DoubleMnist(annotations_file, img_dir)
+    data = DoubleMnist(annotations_file, img_dir, device)
     train_set, test_set = torch.utils.data.random_split(data, [80000, 20000])
-
     train_dataloader = DataLoader(train_set, batch_size=64, shuffle=True)
     train_features, train_labels = next(iter(train_dataloader))
-
     print(f"Feature batch shape: {train_features.size()}")
     print(f"Labels batch shape: {len(train_labels)}")
+
     img = train_features[0].squeeze()
     label = train_labels[0]
-    plt.imshow(img[1], cmap="gray")
+    plt.imshow(img, cmap="gray")
     plt.show()
     print(f"Label: {label}, shape:{label.shape}")
