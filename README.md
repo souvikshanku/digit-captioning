@@ -19,4 +19,10 @@
   * ✅ Check GPU training
   * ✅ lr scheduler
 * ❌ Test on valid set - nah...
+
+* ✅ Remove dunder mains
+* e2e training
+  * repro.ipynb
+  * ✅ check in colab also
+
 * app?

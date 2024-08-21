@@ -23,6 +23,7 @@ class DigitCaptioner(nn.Module):
         self.out_fc = nn.Linear(hidden_size, self.input_size)
 
         self.reset_parameters()
+        self.to(self.device)
 
     def reset_parameters(self):
         std = 1.0 / np.sqrt(self.hidden_size)

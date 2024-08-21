@@ -43,25 +43,3 @@ class DoubleMnist(Dataset):
         y = F.one_hot(torch.tensor(tokens), num_classes)
 
         return y
-
-
-if __name__ == "__main__":
-    import matplotlib.pyplot as plt
-    from torch.utils.data import DataLoader
-
-    annotations_file = "data/labels.csv"
-    img_dir = "data/double_mnist"
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-
-    data = DoubleMnist(annotations_file, img_dir, device)
-    train_set, test_set = torch.utils.data.random_split(data, [80000, 20000])
-    train_dataloader = DataLoader(train_set, batch_size=64, shuffle=True)
-    train_features, train_labels = next(iter(train_dataloader))
-    print(f"Feature batch shape: {train_features.size()}")
-    print(f"Labels batch shape: {len(train_labels)}")
-
-    img = train_features[0].squeeze()
-    label = train_labels[0]
-    plt.imshow(img, cmap="gray")
-    plt.show()
-    print(f"Label: {label}, shape:{label.shape}")
