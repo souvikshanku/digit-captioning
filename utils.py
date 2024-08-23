@@ -13,7 +13,7 @@ def get_caption(model, image):
     inp[0, 0, 27] = 1  # <start>
     idx = None
 
-    while idx != 28:
+    while idx != 28:  # <end>
         with torch.no_grad():
             logits = model.forward(inp, image)
 
