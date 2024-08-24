@@ -22,7 +22,7 @@
 
 * ✅ Remove dunder mains
 * e2e training
-  * repro.ipynb
+  * ✅ repro.ipynb
   * ✅ check in colab also
 
-* app?
+* ✅ app?
