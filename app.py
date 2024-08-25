@@ -7,7 +7,7 @@ from utils import get_caption
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-model = DigitCaptioner(29, 256, device)
+model = DigitCaptioner(input_size=29, hidden_size=256, device=device)
 checkpoint = torch.load("checkpoints/epoch_15.pt", map_location=device)
 model.load_state_dict(checkpoint['model_state_dict'])
 

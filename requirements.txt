@@ -1,0 +1,7 @@
+gdown
+gradio
+ipykernel
+matplotlib
+numpy
+torch
+torchvision
