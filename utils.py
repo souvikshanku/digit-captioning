@@ -9,7 +9,7 @@ def get_caption(model, image):
     vocab_opp = {vocab[key]: key for key in vocab}
 
     chars = ""
-    inp = torch.zeros((1, 1, 29))
+    inp = torch.zeros((1, 1, 29)).to(model.device)
     inp[0, 0, 27] = 1  # <start>
     idx = None
 
@@ -20,7 +20,7 @@ def get_caption(model, image):
         idx = torch.argmax(logits[-1]).item()
         chars += vocab_opp[idx]
 
-        x = torch.zeros((1, 1, 29))
+        x = torch.zeros((1, 1, 29)).to(model.device)
         x[0, 0, idx] = 1
         inp = torch.cat((inp, x), dim=0)
 
