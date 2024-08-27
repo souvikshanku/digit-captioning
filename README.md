@@ -26,7 +26,7 @@ The model has been trained on double digit MNIST dataset obtained from [here](ht
 
 ```bash
 # Download, unzip and move
-cd digit-captioning/data
+cd digit-captioning
 gdown https://drive.google.com/uc?id=1NMLh34zDjrI-bOIK6jgLJAqRrUY3uETC
 unzip double_mnist.zip
 mv labels.csv data/labels.csv
